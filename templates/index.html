@@ -31,6 +31,16 @@
     table {
       width: 100%;
     }
+    #foot{
+      max-height:150px;
+      width:100%;
+      position:fixed;
+      bottom: 0;
+      left:0;
+      overflow:hidden;
+      vertical-align: bottom;
+      
+    }
   </style>
   </head>
   <body>
@@ -56,17 +66,6 @@
           <input type="submit" value="Clear CSV">
         </form>
         <button onclick="socket.emit('download')" value="Download">Download</button>
-        <div id="output">
-      </div>
-      <script> socket.on('output', function(output) {
-          // decode the ArrayBuffer object into a string
-          let decoder = new TextDecoder('utf-8')
-          let output = decoder.decode(output)
-
-          // append the output to the div
-          document.getElementById('output').innerHTML += output;
-        });
-      </script>
     <table>
       <tr>
         <th>Artist</th>
@@ -81,7 +80,18 @@
         </tr>
       {% endfor %}
     </table>
-    </div>
+    </div><code id="foot">
+        <div id="output">
+        </div></code>
+      <script> socket.on('output', function(output) {
+          // decode the ArrayBuffer object into a string
+          let decoder = new TextDecoder('utf-8')
+          let log = decoder.decode(output)
+
+          // append the output to the div
+          document.getElementById('output').innerHTML = log ;
+        });
+      </script>
   </body>
 </html>
 

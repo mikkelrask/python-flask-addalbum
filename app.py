@@ -1,12 +1,13 @@
+from geventwebsocket.handler import WebSocketHandler
 from flask import Flask, render_template, request, redirect, url_for
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO
 import subprocess
 import csv
 
 app = Flask(__name__)
 
 # initialize socketio
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading', handler_class=WebSocketHandler)
 
 # list to store album data
 data = []
@@ -63,13 +64,13 @@ def clear():
 def download():
     # run the dl.sh script and capture the output
     process = subprocess.Popen(['sh', 'dl.sh'], stdout=subprocess.PIPE)
-
+    print(process)
     # listen for new output from the process
     while True:
         line = process.stdout.readline()
         if line:
             # send the output to the frontend
-            socketio.emit('output', line)
+            socketio.emit('output', line )
         else:
             break
 

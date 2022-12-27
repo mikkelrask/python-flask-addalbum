@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -eou pipefail
-MUSICFOLDER="/media/Plex/Music"
+MUSICFOLDER="/media/Ext/Music"
 while true
 do
     LINE=$(cat albums.csv   | head -1 | tr "," "\n" ) || $(echo "albums.csv seems empty. Exiting" && exit) 
@@ -27,8 +27,9 @@ do
             EXTENSION=$(echo "$COVER" | awk -F . '{print $NF}')
             # download file
             wget "$COVER" -O "${ALBUM}/cover.jpg"
+            echo "Done."
         fi
-        echo "Cleaning up albums.csv"
+        echo "Culling album from albums.csv..."
         tail -n +2 "albums.csv" > "albums.tmp" && mv "albums.tmp" albums.csv
         echo "Done."
         echo ""
@@ -37,7 +38,7 @@ do
         then
             mkdir "${MUSICFOLDER}/${ARTIST}"
         fi
-        echo "Moving ${ALBUM} to ${MUSICFOLDER}/${ARTIST}"
+        echo "Moving ${ALBUM} to ${MUSICFOLDER}/${ARTIST}..."
         mv "${ALBUM}" "${MUSICFOLDER}/${ARTIST}"
 
     else
