@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Python Add Album - with ytdl</title>
+    <meta name="description" content="An easy way to collect full albums with the help of ytdl. Adds the nessecary information to download the album, and ships it to the correct destination folder on your NAS" />
+    <meta property="og:title" content="Unique page title - My Site" />
+    <meta property="og:description" content="Page description" />
+    <meta
+      property="og:image"
+      content="https://pragmaticpineapple.com.com/image.jpg"
+    />
+    <meta property="og:image:alt" content="Image description" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:url" content="https://pragmaticpineapple.com.com/page" />
+    <link rel="canonical" href="https://pragmaticpineapple.com.com/page" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/my.webmanifest" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <meta name="theme-color" content="#FF00FF" />
+      <style>
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    table {
+      width: 100%;
+    }
+  </style>
+  </head>
+  <body>
+    <script>
+      var socket = io();
+    </script>
+    <div class="container">
+      <header>
+        <h1>Add album:</h1>
+      </header>
+      <form action="/submit" method="POST">
+        <label for="Artist">Artist:</label><br>
+        <input type="text" id="Artist" name="Artist" required><br>
+        <label for="Album">Album:</label><br>
+        <input type="text" id="Album" name="Album" required><br>
+        <label for="Url">Url:</label><br>
+        <input type="url" id="Url" name="Url" required><br>
+        <label for="Album cover">Album cover:</label><br>
+        <input type="url" id="Album cover" name="Album cover" required><br>
+        <input type="submit" value="Submit">
+        </form>
+        <form action="/clear" method="POST" novalidate>
+          <input type="submit" value="Clear CSV">
+        </form>
+        <button onclick="socket.emit('download')" value="Download">Download</button>
+        <div id="output">
+      </div>
+      <script> socket.on('output', function(output) {
+          // decode the ArrayBuffer object into a string
+          let decoder = new TextDecoder('utf-8')
+          let output = decoder.decode(output)
+
+          // append the output to the div
+          document.getElementById('output').innerHTML += output;
+        });
+      </script>
+    <table>
+      <tr>
+        <th>Artist</th>
+        <th>Album</th>
+        <th>Cover</th>
+      </tr>
+      {% for album in albums %}
+        <tr>
+          <td>{{ album.artist }}</td>
+          <td>{{ album.album }}</td>
+          <td><a href="{{ album.url }}" target="_blank"><img src="{{ album.cover }}" width="233"></a></td>
+        </tr>
+      {% endfor %}
+    </table>
+    </div>
+  </body>
+</html>
+

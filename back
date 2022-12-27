@@ -1,0 +1,57 @@
+from flask import Flask, render_template, request, redirect
+from flask_socketio import SocketIO, send, emit
+import subprocess
+import csv
+import time
+
+app = Flask(__name__)
+socketio = SocketIO(app)
+
+@socketio.on('download')
+def download():
+    # run the dl function and capture the output
+    result = subprocess.run(['bash', 'script.sh'], stdout=subprocess.PIPE)
+    # send the output to the frontend
+    emit('output', result.stdout)
+
+@app.route('/download', methods=['POST'])
+def download_route():
+    # emit the 'download' event to start the download process
+    socketio.emit('download')
+    subprocess.Popen(['bash', 'script.sh'], stdout=subprocess.PIPE)
+    while True:
+        output = subprocess.check_output(['tail', '-1', 'script.log'])
+        socketio.emit('update', {'data': output.decode('utf-8')})
+        time.sleep(1)
+
+    return redirect('/')
+
+@app.route('/')
+def index():
+    data = []
+    with open('albums.csv', 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            data.append({'Artist': row[0], 'Album': row[1], 'Url': row[2], 'Album cover': row[3]})
+    return render_template('index.html', data=data)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    artist = request.form['Artist']
+    album = request.form['Album']
+    url = request.form['Url']
+    cover = request.form['Album cover']
+
+    with open('albums.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([artist, album, url, cover])
+
+    return redirect('/')
+
+@app.route('/clear', methods=['POST'])
+def clear():
+    with open('albums.csv', 'w') as csvfile:
+        pass
+    return redirect('/')
+
+
