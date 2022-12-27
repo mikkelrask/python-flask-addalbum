@@ -83,7 +83,8 @@
     </div><code id="foot">
         <div id="output">
         </div></code>
-      <script> socket.on('output', function(output) {
+      <script> 
+        socket.on('output', function(output) {
           // decode the ArrayBuffer object into a string
           let decoder = new TextDecoder('utf-8')
           let log = decoder.decode(output)
@@ -91,6 +92,9 @@
           // append the output to the div
           document.getElementById('output').innerHTML = log ;
         });
+        socket.on('download_complete', function(){
+          location.reload();
+        })
       </script>
   </body>
 </html>

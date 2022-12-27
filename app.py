@@ -73,6 +73,7 @@ def download():
             socketio.emit('output', line )
         else:
             break
+    socketio.emit('download_complete')
 
 @app.route('/download', methods=['POST'])
 def download_route():
